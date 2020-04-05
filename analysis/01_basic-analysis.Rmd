@@ -1,0 +1,126 @@
+---
+title: "Basic Analysis"
+author: "LJ"
+date: "5/4/2020"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, message = FALSE,
+  collapse = TRUE,
+  comment = "#>")
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+theme_set(theme_light())
+```
+
+## Data Acquisition
+
+The data has been uploaded into the system and is saved in the following varibles.
+
+```{r}
+cov_confirmed <- readr::read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")%>% janitor::clean_names()
+
+```
+
+```{r}
+cov_deaths <- readr::read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")%>% janitor::clean_names()
+
+```
+
+```{r}
+cov_recovered <- readr::read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv") %>% janitor::clean_names()
+
+```
+
+## Data Transformation
+
+The tables share the same structre.  We can look at one of them to see the wrangling that may be necessary to do prior to some tidy analysis.
+
+```{r}
+cov_confirmed %>% names() %>% head(10)
+```
+
+It is a long dataset that each day increases as the more data comes in.
+
+Basically the first two columns state names of provinces or states and the countries where they are in.  Lat and Long provide the coordinates that will help in doing geographical analysis, and the there are columns with the dates.  Each dates ennumerates the number of cases per region or country.  Not all provinces are listed therefore, lots NAs appear in that those columns.
+
+Let's check only for those columns converting them temporarily to factors.
+
+```{r}
+cov_confirmed %>% 
+  select(province_state, country_region) %>% 
+  mutate(province_state = as.factor(province_state),
+         country_region = as.factor(country_region)) %>% 
+  summary()
+```
+
+178 NAs can be found in the column for Province or State.
+
+There is a lot of tidying up to do with these set before going on finding insights.  The dates columns should be gathered into one for all.  Also the transformation of the columns above should be done in all sets as well.
+
+Let's nest the datasets,
+
+```{r}
+cov_nested <- dplyr::tibble(
+  item = 1:3,
+  set = c("cov_confirmed", "cov_deaths", "cov_recovered"), 
+  list = list(cov_confirmed, cov_deaths, cov_recovered)) 
+
+cov_nested
+
+```
+
+Unnesting it we will get a consolidated dataset.  We can check it by counting then number of cases for each of the datasets
+
+```{r}
+cov_consolidated <- cov_nested %>% tidyr::unnest() 
+cov_consolidated %>% count(set, sort = TRUE)
+```
+
+Let's do the corresponding transformations
+
+```{r}
+cov_tidy <- cov_consolidated %>% 
+  select(-item) %>% 
+  tidyr::pivot_longer(cols = starts_with("x"),
+                      names_to = "dates",
+                      values_to = "cases") %>%
+  mutate_at(vars(province_state, country_region, set), funs(as.factor)) %>% 
+  mutate(dates = stringr::str_sub(dates, 2),
+         dates = stringr::str_replace_all(dates, "_", "-")) %>% 
+  mutate(dates = lubridate::mdy(dates))
+  
+```
+
+
+## Data for Analysis
+
+```{r}
+cov_analysis <- cov_tidy %>% 
+  group_by(province_state, country_region, dates) %>% 
+  summarise(cases_cum = sum(cases)) %>% 
+  mutate(dates_lag = dates - lubridate::days(1),
+         cases_inc = c(0, diff(cases_cum))) %>% 
+  arrange(country_region, dates_lag) %>% 
+  ungroup()
+```
+
+
+
+```{r}
+cov_analysis %>%
+  select(-province_state) %>% 
+  count(cases_cum, country_region, sort = TRUE)
+  
+```
+
+
+
+
+
+
+
+
+

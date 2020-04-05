@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "Coronavirus Analysis in R"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +8,17 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+## Introduction
+
+This website will follow the steps of the analysis of the coronavirus as explained in the articles found in the medium webpages: [The Basics of Exploratory Data Analysis with COVID-19 Data](https://medium.com/swlh/guide-to-exploratory-data-analysis-with-jhu-covid-19-data-41101b69c855) and [Further analysis]().
+
+Given the amount of information that abounds, it helps to be able to work with the raw data and see trends using tools we can control, such as the software R.  
+
+The main data will come from the John Hopkins observatory repository in Github.  A data set that is updated frequently.  
+
+We are encouraged to take the analysis in our hands!
+
+The analysis will be comprised of the following sections.
+
+ 1. [Basic Analysis](01_basic-analysis.html)
+ 2. Further Analysis
