@@ -1,0 +1,127 @@
+---
+title: "tidycovid19 Rpackage"
+author: "LJ"
+date: "10/4/2020"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, message = FALSE,
+  collapse = TRUE,
+  comment = "#>")
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+theme_set(theme_light())
+```
+
+## The tidycovid19 Rpackage
+
+The `tidycovid19` R package created by [Joachim Gassen](https://github.com/joachim-gassen/tidycovid19).  pulls date from various sources and offers lots of data frames that combines the current update data together with interventions and financial aid provided for each country.  It is a good tool to analyse time series data.  It also provides a tool for graphics as well.  The purpose of this notebook is to do some explorations of its functions and applications.
+
+## Loading the package and observation.  
+
+```{r, include = FALSE}
+# remotes::install_github("joachim-gassen/tidycovid19")
+library(tidycovid19)
+library(tidyverse)
+
+```
+
+Let's see the functions and datasets that it may contain.
+
+```{r}
+ls("package:tidycovid19") %>% 
+  tibble::enframe() %>% 
+  select(-name) %>% 
+  rename(func = value) %>% 
+  slice(2:n()) %>% 
+  mutate(id = row_number()) %>% 
+  select(id, func)
+  
+```
+
+The functions in the package are used to download the data from various sources.  I will explain the first four.
+
+ a. The _download_acaps_npi_data_ extracts the informationf from [ACAPS](https://www.acaps.org/covid19-government-measures-dataset) and it contains data regarding government measures taken in place to avoid the spread of the virus such as lockdowns and social distancing.
+ 
+ b. The _download_google_trends_data_ contains the data from Google Trends searches with the term "Coronavirus."  It can help see the public attention the virus and the measures taken in each country to curve it.
+ 
+ c. The _download_jhu_csse_covid19_data_ is the most influential dataset on the subject aggregating data per country. This function extracts the updated information of the pandemic.
+ 
+ d. The _download_merged_data()_ downloads all data sources and creates a merged country-day panel sample.
+ 
+## Exploring the datasets
+
+```{r}
+library(tidycovid19)
+```
+
+
+Let'd check the google trends data.
+
+```{r}
+gtrends <- download_google_trends_data(cached = TRUE)
+```
+
+```{r}
+gtrends %>% 
+  glimpse()
+```
+
+
+```{r}
+merged_df <- download_merged_data(cached = TRUE)
+```
+
+
+```{r}
+merged_df %>% 
+  glimpse()
+```
+
+```{r}
+merged_df %>% 
+  skimr::skim()
+```
+
+Let's see the lockdown data for Spain
+
+```{r}
+merged_df %>% 
+  filter(str_detect(country, "Spain")) %>% 
+  select(date, soc_dist) %>% 
+  head(10)
+```
+
+The columns regarding NPI (non-pharmaceutical intervention) contain a number that I am having a hard time to decipher.  After checking the source data for NPI measures [found in this excel file from the ACAPS website and described in detail](https://www.acaps.org/sites/acaps/files/resources/files/20200409_acaps_-_covid-19_goverment_measures_dataset_v6.xlsx), I see that the numbers in those columns (soc_dist, lockdown, etc.) refer to the number of measures implemented and active in those countries.  For example, in Spain the first NPI measure taken was a Full lockdown measure on 202-03-13, hence the number 1.  Then on the 16th, 3 days later, a second measure was implemented regarding a Partial lockdown regading travel of workers in essential businesses and activities.  The numbers are cummulative.  It will be interesting to see whether these numbers decrease the numbers some measures start being lifted.  
+
+In the next extract we can see the latest information regarding Spain where 6 measures are already in place.  
+
+
+```{r}
+merged_df %>% 
+  filter(str_detect(country, "Spain")) %>% 
+  select(country, date, soc_dist) %>% 
+  tail()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+
+
+
