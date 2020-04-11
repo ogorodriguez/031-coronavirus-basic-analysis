@@ -21,4 +21,4 @@ We are encouraged to take the analysis in our hands!
 The analysis will be comprised of the following sections.
 
  1. [Basic Analysis](01_basic-analysis.html)
- 2. Further Analysis
+ 2. [The tidycovid19 R package](02_covid19-Rpackage.html)

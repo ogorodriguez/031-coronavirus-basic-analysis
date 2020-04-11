@@ -9,9 +9,13 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fa-github
+    text: Source code
+    href: https://github.com/ogorodriguez/031-coronavirus-basic-analysis
 output:
-  workflowr::wflow_html:
-    toc: yes
-    toc_float: yes
-    theme: cosmo
-    highlight: textmate
+ workflowr::wflow_html:
+  toc: yes
+  toc_float: yes
+  theme: simplex
+  highlight: textmate
