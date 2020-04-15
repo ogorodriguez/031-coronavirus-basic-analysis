@@ -412,7 +412,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-04-10
+<strong>Last updated:</strong> 2020-04-15
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -503,16 +503,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomogorodriguez031coronavirusbasicanalysistree5baee67a691821140b4ec8de1064318f65c521d2targetblank5baee67a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ogorodriguez/031-coronavirus-basic-analysis/tree/5baee67a691821140b4ec8de1064318f65c521d2" target="_blank">5baee67</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomogorodriguez031coronavirusbasicanalysistreeb7160e9397135535e3c004c3e91a3c2fe1055feftargetblankb7160e9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ogorodriguez/031-coronavirus-basic-analysis/tree/b7160e9397135535e3c004c3e91a3c2fe1055fef" target="_blank">b7160e9</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomogorodriguez031coronavirusbasicanalysistree5baee67a691821140b4ec8de1064318f65c521d2targetblank5baee67a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomogorodriguez031coronavirusbasicanalysistreeb7160e9397135535e3c004c3e91a3c2fe1055feftargetblankb7160e9a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ogorodriguez/031-coronavirus-basic-analysis/tree/5baee67a691821140b4ec8de1064318f65c521d2" target="_blank">5baee67</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ogorodriguez/031-coronavirus-basic-analysis/tree/b7160e9397135535e3c004c3e91a3c2fe1055fef" target="_blank">b7160e9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -521,9 +521,6 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -562,6 +559,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ogorodriguez/031-coronavirus-basic-analysis/45a97812e6772f8b6e49eb329a9a4a9e43cd2de5/docs/01_basic-analysis.html" target="_blank">45a9781</a>
+</td>
+<td>
+ogorodriguez
+</td>
+<td>
+2020-04-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -649,7 +663,7 @@ First publish of files
 #&gt;  Aruba                       :  1    United Kingdom: 11   
 #&gt;  Australian Capital Territory:  1    Australia     :  8   
 #&gt;  (Other)                     : 77    Netherlands   :  5   
-#&gt;  NA&#39;s                        :181    (Other)       :180</code></pre>
+#&gt;  NA&#39;s                        :182    (Other)       :181</code></pre>
 <p>178 NAs can be found in the column for Province or State.</p>
 <p>There is a lot of tidying up to do with these set before going on finding insights. The dates columns should be gathered into one for all. Also the transformation of the columns above should be done in all sets as well.</p>
 <p>Let’s nest the datasets,</p>
@@ -662,18 +676,18 @@ cov_nested
 #&gt; # A tibble: 3 x 3
 #&gt;    item set           list               
 #&gt;   &lt;int&gt; &lt;chr&gt;         &lt;list&gt;             
-#&gt; 1     1 cov_confirmed &lt;tibble [263 x 83]&gt;
-#&gt; 2     2 cov_deaths    &lt;tibble [263 x 83]&gt;
-#&gt; 3     3 cov_recovered &lt;tibble [249 x 83]&gt;</code></pre>
+#&gt; 1     1 cov_confirmed &lt;tibble [264 x 88]&gt;
+#&gt; 2     2 cov_deaths    &lt;tibble [264 x 88]&gt;
+#&gt; 3     3 cov_recovered &lt;tibble [250 x 88]&gt;</code></pre>
 <p>Unnesting it we will get a consolidated dataset. We can check it by counting then number of cases for each of the datasets</p>
 <pre class="r"><code>cov_consolidated &lt;- cov_nested %&gt;% tidyr::unnest() 
 cov_consolidated %&gt;% count(set, sort = TRUE)
 #&gt; # A tibble: 3 x 2
 #&gt;   set               n
 #&gt;   &lt;chr&gt;         &lt;int&gt;
-#&gt; 1 cov_confirmed   263
-#&gt; 2 cov_deaths      263
-#&gt; 3 cov_recovered   249</code></pre>
+#&gt; 1 cov_confirmed   264
+#&gt; 2 cov_deaths      264
+#&gt; 3 cov_recovered   250</code></pre>
 <p>Let’s do the corresponding transformations</p>
 <pre class="r"><code>cov_tidy &lt;- cov_consolidated %&gt;% 
   select(-item) %&gt;% 
@@ -698,20 +712,20 @@ cov_consolidated %&gt;% count(set, sort = TRUE)
 <pre class="r"><code>cov_analysis %&gt;%
   select(-province_state) %&gt;% 
   count(cases_cum, country_region, sort = TRUE)
-#&gt; # A tibble: 6,388 x 3
+#&gt; # A tibble: 7,243 x 3
 #&gt;    cases_cum country_region            n
 #&gt;        &lt;dbl&gt; &lt;fct&gt;                 &lt;int&gt;
-#&gt;  1         0 Canada                  741
+#&gt;  1         0 Canada                  747
 #&gt;  2         0 United Kingdom          592
 #&gt;  3         0 France                  516
 #&gt;  4         0 Netherlands             268
 #&gt;  5         0 Australia               200
 #&gt;  6         0 Denmark                 132
-#&gt;  7         0 Sao Tome and Principe    75
-#&gt;  8         2 China                    75
-#&gt;  9         0 South Sudan              74
-#&gt; 10         0 Western Sahara           74
-#&gt; # ... with 6,378 more rows</code></pre>
+#&gt;  7         2 China                    80
+#&gt;  8         0 Yemen                    79
+#&gt;  9         0 Sao Tome and Principe    75
+#&gt; 10         0 South Sudan              74
+#&gt; # ... with 7,233 more rows</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -735,25 +749,25 @@ cov_consolidated %&gt;% count(set, sort = TRUE)
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt;  [1] forcats_0.4.0   stringr_1.4.0   dplyr_0.8.4     purrr_0.3.3    
-#&gt;  [5] readr_1.3.1     tidyr_1.0.2     tibble_2.1.3    tidyverse_1.3.0
-#&gt;  [9] ggplot2_3.2.1   workflowr_1.6.1
+#&gt;  [1] forcats_0.5.0   stringr_1.4.0   dplyr_0.8.5     purrr_0.3.3    
+#&gt;  [5] readr_1.3.1     tidyr_1.0.2     tibble_3.0.0    tidyverse_1.3.0
+#&gt;  [9] ggplot2_3.3.0   workflowr_1.6.1
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
-#&gt;  [1] tidyselect_1.0.0 xfun_0.12        janitor_1.2.1    haven_2.2.0     
-#&gt;  [5] lattice_0.20-40  snakecase_0.11.0 colorspace_1.4-1 generics_0.0.2  
-#&gt;  [9] vctrs_0.2.3      htmltools_0.4.0  yaml_2.2.1       utf8_1.1.4      
-#&gt; [13] rlang_0.4.4      later_1.0.0      pillar_1.4.3     glue_1.3.1      
-#&gt; [17] withr_2.1.2      DBI_1.1.0        dbplyr_1.4.2     modelr_0.1.5    
-#&gt; [21] readxl_1.3.1     lifecycle_0.1.0  munsell_0.5.0    gtable_0.3.0    
-#&gt; [25] cellranger_1.1.0 rvest_0.3.5      evaluate_0.14    knitr_1.28      
-#&gt; [29] httpuv_1.5.2     curl_4.3         fansi_0.4.0      broom_0.5.4     
-#&gt; [33] Rcpp_1.0.4       promises_1.1.0   scales_1.1.0     backports_1.1.5 
-#&gt; [37] jsonlite_1.6.1   fs_1.3.2         hms_0.5.3        digest_0.6.24   
-#&gt; [41] stringi_1.4.6    grid_3.6.1       rprojroot_1.3-2  cli_2.0.1       
-#&gt; [45] tools_3.6.1      magrittr_1.5     lazyeval_0.2.2   crayon_1.3.4    
-#&gt; [49] whisker_0.4      pkgconfig_2.0.3  xml2_1.2.2       reprex_0.3.0    
-#&gt; [53] lubridate_1.7.4  rstudioapi_0.11  assertthat_0.2.1 rmarkdown_2.1   
+#&gt;  [1] tidyselect_1.0.0 xfun_0.12        janitor_2.0.0    haven_2.2.0     
+#&gt;  [5] lattice_0.20-40  snakecase_0.11.0 colorspace_1.4-1 vctrs_0.2.4     
+#&gt;  [9] generics_0.0.2   htmltools_0.4.0  yaml_2.2.1       utf8_1.1.4      
+#&gt; [13] rlang_0.4.5      later_1.0.0      pillar_1.4.3     glue_1.4.0      
+#&gt; [17] withr_2.1.2      DBI_1.1.0        dbplyr_1.4.2     readxl_1.3.1    
+#&gt; [21] modelr_0.1.6     lifecycle_0.2.0  cellranger_1.1.0 munsell_0.5.0   
+#&gt; [25] gtable_0.3.0     rvest_0.3.5      evaluate_0.14    knitr_1.28      
+#&gt; [29] httpuv_1.5.2     curl_4.3         fansi_0.4.0      broom_0.5.5     
+#&gt; [33] Rcpp_1.0.4.6     promises_1.1.0   scales_1.1.0     backports_1.1.6 
+#&gt; [37] jsonlite_1.6.1   fs_1.4.1         hms_0.5.3        digest_0.6.24   
+#&gt; [41] stringi_1.4.6    grid_3.6.1       rprojroot_1.3-2  cli_2.0.2       
+#&gt; [45] tools_3.6.1      magrittr_1.5     crayon_1.3.4     whisker_0.4     
+#&gt; [49] pkgconfig_2.0.3  ellipsis_0.3.0   xml2_1.3.1       reprex_0.3.0    
+#&gt; [53] lubridate_1.7.8  rstudioapi_0.11  assertthat_0.2.1 rmarkdown_2.1   
 #&gt; [57] httr_1.4.1       R6_2.4.1         nlme_3.1-144     git2r_0.26.1    
 #&gt; [61] compiler_3.6.1</code></pre>
 </div>
