@@ -71,7 +71,7 @@ gtrends %>%
 
 
 ```{r}
-merged_df <- download_merged_data(cached = TRUE)
+merged_df <- download_merged_data(cached = FALSE)
 ```
 
 
@@ -107,15 +107,123 @@ merged_df %>%
 ```
 
 
+## Counting the cummulative deaths per country
+
+In [this other website](https://kieranhealy.org/blog/archives/2020/03/21/covid-19-tracking/) the author is doing a manual (and remarkable) work in curating by hand a dataset of the Coronavirus so he can do some analysis and visuals.  One of the things he does is calculating the cummulative number of deaths per country.  I will try to do the same thing using the datasets provided by the tidycovid package.  
+
+It seems that the confirmed variable in the merged_df dataset refers to cummulative cases.  
+
+```{r}
+merged_df %>% 
+  select(date, country, confirmed, deaths ) %>% 
+  filter(str_detect(country, "China"))
+```
+
+## Augmenting the dataset
+
+
+I will create an augmented merged data frame so that I can see the number of cases per day, and change the date label factor into English for consistency.
+
+I will include a column for the number of days elapsed since the beginning of the pandemic tracking in Januray (2020-01-22)
+
+
+```{r}
+merged_aug <- merged_df %>% 
+  mutate(c_cases = case_when(
+            confirmed - lag(confirmed) < 0 ~ confirmed,
+            TRUE ~ confirmed - lag(confirmed)),
+         d_cases = case_when(
+            deaths - lag(deaths) < 0 ~ deaths,
+            TRUE ~ deaths - lag(deaths)),
+         r_cases = case_when(
+            recovered - lag(recovered) < 0 ~ recovered,
+            TRUE ~ recovered - lag(recovered)),
+         day_name = lubridate::wday(date, label = TRUE, abbr = FALSE,
+  week_start = getOption("lubridate.week.start", 1)),
+         day_name = as_factor(day_name),
+         day_name = recode(day_name,
+                           lunes = "Monday",
+                           martes = "Tuesday",
+                           miércoles = "Wednesday",
+                           jueves = "Thursday",
+                           viernes = "Friday",
+                           sábado = "Saturday",
+                           domingo = "Sunday"
+                           ),
+        days_elapsed = date - min(date)
+  ) %>% 
+  select(country, iso3c, region, date, days_elapsed, day_name, c_cases, confirmed, d_cases, deaths, r_cases, recovered, everything())
+
+```
+
+
+Some comments on the table above.  The data from the packages has information on the cummulative number of confirmed , deaths and recovered  cases.  I needed to include columns to see the number of each cases per day.  In order to avoid negative number of cases due to the sequential order of the countries (for example, for the earliest day in USA the number confirmed cases was about -400 since the previous row of data was the latest date in Uruguay.)
+
+For that, I included a condition using `case_when()`.  That made the formula a bit verbose, but for the moment it does the trick.
 
 
 
+```{r}
+merged_aug %>% glimpse()
+```
+
+The following code will show the latest data for one country only.
+
+```{r}
+# Write the name of the country to search for inside the quotes
+country_name <- "Spain"
+merged_aug %>% 
+  filter(str_detect(country, regex(country_name, ignore_case = TRUE))) %>% 
+  tail(1) %>% 
+  mutate_all(as.character) %>% 
+  pivot_longer(cols = country:timestamp,
+               names_to = "variable",
+               values_to = "value")
+```
+
+## Graphs
+
+### Evolution evolution of daily cases in a country
+
+```{r}
+# Country selected in variable country_name
+merged_aug %>% 
+  filter(str_detect(country, regex(country_name, ignore_case = TRUE)),
+         deaths > 0) %>% 
+  select(date, country, c_cases, d_cases, r_cases) %>% 
+  pivot_longer(cols = ends_with("_cases"), names_to = "type_cases", values_to = "value") %>% 
+  ggplot(aes(date, value, colour = type_cases)) +
+   # geom_line() +
+   geom_smooth() +
+   facet_wrap(~ type_cases, nrow = 3, scales = "free_y") +
+   labs(title = glue::glue("Daily cases in {country_name}")) +
+   theme_minimal()
+
+```
 
 
+### Evolution evolution of daily cases in a region
 
+```{r}
+region_name <- "Europe"
 
+merged_aug %>% 
+  filter(str_detect(region, regex(region_name, ignore_case = TRUE)),
+         confirmed != 0) %>% 
+  select(date, region, c_cases, d_cases, r_cases) %>% 
+  group_by(date, region) %>% 
+  summarise(c_sum = sum(c_cases),
+            d_sum = sum(d_cases),
+            r_sum = sum(r_cases)) %>%  
+  ungroup() %>% 
+  pivot_longer(cols = ends_with("_sum"), names_to = "sum_cases", values_to = "value") %>% 
+  ggplot(aes(date, value, colour = sum_cases)) +
+   geom_line() +
+   geom_smooth() +
+   facet_wrap(~ sum_cases, nrow = 3, scales = "free_y") +
+   labs(title = glue::glue("Cases in {region_name}"))
 
-
+```
 
 
 
